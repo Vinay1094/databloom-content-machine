@@ -1,0 +1,13 @@
+# Core dependencies
+requests==2.31.0
+ffmpeg-python==0.2.0
+ollama==0.1.7
+websocket-client==1.7.0
+
+# TTS
+kokoro
+numpy
+soundfile
+
+# Utilities
+uuid
