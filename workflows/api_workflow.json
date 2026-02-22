@@ -1,0 +1,62 @@
+{
+  "_comment": "SAMPLE SKELETON - Replace with your actual ComfyUI API workflow export.",
+  "_instructions": "In ComfyUI: Settings > Dev Mode > Save (API Format). Save output as this file.",
+  "3": {
+    "inputs": {
+      "seed": 105674839,
+      "steps": 20,
+      "cfg": 8.0,
+      "sampler_name": "euler",
+      "scheduler": "normal",
+      "denoise": 1.0,
+      "model": ["4", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["5", 0]
+    },
+    "class_type": "KSampler"
+  },
+  "4": {
+    "inputs": {
+      "ckpt_name": "flux1-schnell.safetensors"
+    },
+    "class_type": "CheckpointLoaderSimple"
+  },
+  "5": {
+    "inputs": {
+      "width": 1024,
+      "height": 576,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage"
+  },
+  "6": {
+    "inputs": {
+      "text": "[YOUR SCRIPT INJECTS THE VISUAL PROMPT HERE]",
+      "clip": ["4", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_note": "This is the node your Python script modifies. Node ID '6' must match prompt_node_id in main.py"
+  },
+  "7": {
+    "inputs": {
+      "text": "blurry, low quality, deformed, watermark",
+      "clip": ["4", 1]
+    },
+    "class_type": "CLIPTextEncode"
+  },
+  "8": {
+    "inputs": {
+      "samples": ["3", 0],
+      "vae": ["4", 2]
+    },
+    "class_type": "VAEDecode"
+  },
+  "9": {
+    "inputs": {
+      "filename_prefix": "databloom_scene",
+      "images": ["8", 0]
+    },
+    "class_type": "SaveImage"
+  }
+}
