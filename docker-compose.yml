@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  # The Brain (Local LLM)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: databloom_ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # The Studio (Image/Video Generation)
+  comfyui:
+    image: yanwk/comfyui-boot:latest
+    container_name: databloom_comfyui
+    ports:
+      - "8188:8188"
+    volumes:
+      - ./models:/workspace/ComfyUI/models
+      - ./output:/workspace/ComfyUI/output
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  # The Orchestrator (Python App)
+  app:
+    build: .
+    container_name: databloom_orchestrator
+    volumes:
+      - .:/app
+      - ./output:/app/output
+    depends_on:
+      - ollama
+      - comfyui
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+      - COMFYUI_HOST=comfyui:8188
+    command: ["python", "main.py"]
+
+volumes:
+  ollama_data:
